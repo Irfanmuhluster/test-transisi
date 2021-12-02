@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostCompanyRequest;
 use App\Http\Requests\StoreUpdateCompanyRequest;
 use App\Models\Company;
+use App\Repository\CompanyRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +14,14 @@ use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
+
+    private $companyRepository;
+
+    public function __construct(CompanyRepository $companyRepository)
+    {
+        $this->companyRepository = $companyRepository;
+
+    }
     /**
      * Display a listing of the resource.
      *
@@ -21,9 +30,8 @@ class CompanyController extends Controller
     public function index()
     {
         //
-        $company = Company::orderBy('created_at', 'DESC')->paginate('5');
-        
-        $rank = $company->firstItem();
+        $company = $this->companyRepository->getAll();
+        $rank = $this->companyRepository->rank();
         return view('company.index', compact('company', 'rank'));
     }
 
