@@ -7,6 +7,7 @@ use App\Http\Requests\StorePostEmployeeRequest;
 use App\Imports\EmployeeImport;
 use App\Models\Company;
 use App\Models\Employe;
+use App\Repository\EmployeeRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -14,6 +15,15 @@ use PDF;
 
 class EmployeesController extends Controller
 {
+    
+    private $employeeRepository;
+
+    public function __construct(EmployeeRepository $employeeRepository)
+    {
+        $this->employeeRepository = $employeeRepository;
+
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -22,17 +32,16 @@ class EmployeesController extends Controller
     public function index()
     {
         //
-        $employee = Employe::orderBy('created_at', 'DESC')->paginate('5');
-        
-        $rank = $employee->firstItem();
+        $employee = $this->employeeRepository->getAll();
+        $rank = $this->employeeRepository->rank();
         return view('employee.index', compact('employee', 'rank'));
         
     }
 
     public function listEmployee($id) {
-        $employee = Employe::where('id_company', $id)->orderBy('created_at', 'DESC')->paginate('5');
+        $employee = $this->employeeRepository->listEmployee($id);
         $rank = $employee->firstItem();
-        $company = Company::find($id);
+        $company = $this->employeeRepository->companyId($id);
 
         return view('company.listemployee', compact('employee', 'company', 'rank'));
     }
