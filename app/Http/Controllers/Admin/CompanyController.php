@@ -49,27 +49,7 @@ class CompanyController extends Controller
 
 
     public function searchByParam($param = 'company') {
-
-            $query = request()->query();
-            if ($param == 'company') {
-                //search
-                
-                $result = Company::select('id', 'nama')->search()->orderBy('nama', 'ASC')->get();
-                // dd($result);
-                $result->map(function($item) {
-                    $item['text'] = ucfirst($item['nama']);
-                    return $item;
-                });
-    
-                
-                return response([
-                    'status' => 200,
-                    'search' => $param,
-                    'query' => $query['q'],
-                    'result' => $result
-                ]);
-    
-            }
+            return $this->companyRepository->searchByParam($param);
     }
 
     /**
